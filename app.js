@@ -8,10 +8,9 @@ let board = [];
 let turn = 'red'; 
 let selectedPiece = null; 
 let validMoves = []; 
-let gameMode = 'standard'; // 'standard' (Kyarn) or 'suicide' (Kone)
-
-// Track multi-jump state
-let continuationPiece = null; // If set, only this piece can move (must jump)
+let gameMode = 'standard'; 
+let continuationPiece = null; 
+let isFlipped = false; // Flip State
 
 function initGame() {
     gameMode = modeSelect.value;
@@ -37,9 +36,7 @@ function renderBoard() {
     boardEl.innerHTML = '';
     
     let redCount = 0, blackCount = 0;
-    let redHasMoves = false, blackHasMoves = false; // Check for stalemate
 
-    // First pass to count pieces
     for (let r = 0; r < 8; r++) {
         for (let c = 0; c < 8; c++) {
             const val = board[r][c];
@@ -54,7 +51,6 @@ function renderBoard() {
             const div = document.createElement('div');
             div.className = `square ${(r + c) % 2 === 0 ? 'light' : 'dark'}`;
             
-            // Highlight Valid Moves
             const move = validMoves.find(m => m.r === r && m.c === c);
             if (move) {
                 div.classList.add('valid-move');
@@ -65,26 +61,20 @@ function renderBoard() {
                 div.classList.add('selected');
             }
 
-            // Render Piece
             if (val !== 0) {
                 const p = document.createElement('div');
                 let colorClass = (val === 1 || val === 3) ? 'red' : 'black';
                 let kingClass = (val === 3 || val === 4) ? 'king' : '';
                 
-                // Highlight piece that MUST continue jumping
                 if (continuationPiece && continuationPiece.r === r && continuationPiece.c === c) {
                     p.classList.add('must-jump');
                 }
 
                 p.className = `piece ${colorClass} ${kingClass} ${p.className}`;
                 
-                // Click Handler
                 const isMyTurn = (turn === 'red' && (val === 1 || val === 3)) || 
                                  (turn === 'black' && (val === 2 || val === 4));
                 
-                // Interaction Rules:
-                // 1. Must be my turn.
-                // 2. If continuationPiece exists, ONLY that piece can be clicked.
                 if (isMyTurn) {
                     if (!continuationPiece || (continuationPiece.r === r && continuationPiece.c === c)) {
                         p.onclick = (e) => {
@@ -105,68 +95,43 @@ function renderBoard() {
 
 function checkWinCondition(redCount, blackCount) {
     let winner = null;
-
     if (gameMode === 'standard') {
-        // ကျားကျန် ကျားနိုင် (Normal)
         if (blackCount === 0) winner = 'Red';
         else if (redCount === 0) winner = 'Black';
     } else {
-        // ကျားကုန် ကျားနိုင် (Suicide)
         if (redCount === 0) winner = 'Red';
         else if (blackCount === 0) winner = 'Black';
     }
-
     if (winner) showWin(winner);
 }
 
 function selectPiece(r, c) {
     selectedPiece = { r, c };
-    // Only calculate moves for the selected piece
-    // If in multi-jump mode, strict rules apply (handled in getValidMoves via check)
     validMoves = getValidMoves(r, c, board[r][c], !!continuationPiece);
     renderBoard();
 }
 
-// *** CORE LOGIC ***
 function getValidMoves(r, c, type, mustJumpOnly = false) {
     let moves = [];
     const isKing = (type === 3 || type === 4);
     const isRed = (type === 1 || type === 3);
-    
     let dirs = [];
-    // Directions definition
-    if (isKing) {
-        // King moves/captures in ALL 4 directions
-        dirs = [[-1,-1], [-1,1], [1,-1], [1,1]];
-    } else {
-        // Normal moves ONLY Forward
-        // Red moves UP (-1), Black moves DOWN (+1)
-        dirs = isRed ? [[-1,-1], [-1,1]] : [[1,-1], [1,1]];
-    }
+    if (isKing) dirs = [[-1,-1], [-1,1], [1,-1], [1,1]];
+    else dirs = isRed ? [[-1,-1], [-1,1]] : [[1,-1], [1,1]];
+
+    const captureDirs = [[-1,-1], [-1,1], [1,-1], [1,1]];
 
     if (!isKing) {
-        // --- NORMAL PIECE LOGIC (Fixed: Forward Capture Only) ---
-        
-        // စည်းမျဉ်းပြင်ဆင်ချက်: သာမန်အကောင်သည် ရှေ့ကိုပဲ စားရမည်။ 
-        // ထို့ကြောင့် captureDirs သည် dirs (သွားရာလမ်းကြောင်း) နှင့် အတူတူပင်ဖြစ်သည်
-        const captureDirs = dirs; 
-
-        // 1. Capture (Forward Only)
         captureDirs.forEach(([dr, dc]) => {
-            const nr = r + dr, nc = c + dc; // Enemy pos
-            const lr = r + dr*2, lc = c + dc*2; // Landing pos
-            
-            // Check board bounds for landing spot
+            const nr = r + dr, nc = c + dc; 
+            const lr = r + dr*2, lc = c + dc*2; 
             if (onBoard(lr, lc) && board[lr][lc] === 0) {
                 const mid = board[nr][nc];
-                // Check if there is an enemy in the middle
                 if (mid !== 0 && isEnemy(isRed, mid)) {
                     moves.push({ r: lr, c: lc, isJump: true, jumpR: nr, jumpC: nc });
                 }
             }
         });
-
-        // 2. Walk (Forward Only) - ONLY if not forced to jump
         if (!mustJumpOnly) {
             dirs.forEach(([dr, dc]) => {
                 const nr = r + dr, nc = c + dc;
@@ -175,42 +140,33 @@ function getValidMoves(r, c, type, mustJumpOnly = false) {
                 }
             });
         }
-
     } else {
-        // --- FLYING KING LOGIC (All Directions) ---
         dirs.forEach(([dr, dc]) => {
             let captured = false;
             let enemyPos = null;
-
             for (let dist = 1; dist < 8; dist++) {
                 const nr = r + dr * dist;
                 const nc = c + dc * dist;
-
                 if (!onBoard(nr, nc)) break;
-
                 const cell = board[nr][nc];
-
                 if (cell === 0) {
                     if (!captured) {
-                        // Regular move (only if not forced jump mode)
                         if(!mustJumpOnly) moves.push({ r: nr, c: nc, isJump: false });
                     } else {
-                        // Landing after capture
                         moves.push({ r: nr, c: nc, isJump: true, jumpR: enemyPos.r, jumpC: enemyPos.c });
                     }
                 } else {
-                    if (captured) break; // Cannot jump two pieces in a row directly
+                    if (captured) break; 
                     if (isEnemy(isRed, cell)) {
                         captured = true;
                         enemyPos = { r: nr, c: nc };
                     } else {
-                        break; // Blocked by own
+                        break; 
                     }
                 }
             }
         });
     }
-
     return moves;
 }
 
@@ -219,38 +175,27 @@ function makeMove(toR, toC) {
     if (!move) return;
 
     let pieceVal = board[selectedPiece.r][selectedPiece.c];
-    const isRed = (pieceVal === 1 || pieceVal === 3);
-
-    // 1. Move piece
     board[toR][toC] = pieceVal;
     board[selectedPiece.r][selectedPiece.c] = 0;
 
     let justPromoted = false;
-    // 2. Promotion (Red -> Top (0), Black -> Bottom (7))
     if (pieceVal === 1 && toR === 0) { board[toR][toC] = 3; pieceVal = 3; justPromoted = true; }
     if (pieceVal === 2 && toR === 7) { board[toR][toC] = 4; pieceVal = 4; justPromoted = true; }
 
-    // 3. Handle Capture logic
     if (move.isJump) {
-        board[move.jumpR][move.jumpC] = 0; // Remove eaten piece
-        
-        // --- MULTI JUMP CHECK ---
-        // Calculate if this specific piece can jump again from the new position
-        // Pass 'true' to getValidMoves to ONLY look for jumps
+        board[move.jumpR][move.jumpC] = 0; 
         const nextMoves = getValidMoves(toR, toC, pieceVal, true);
         const canJumpAgain = nextMoves.some(m => m.isJump);
 
         if (canJumpAgain) {
-            // Force player to continue
             continuationPiece = { r: toR, c: toC };
             selectedPiece = { r: toR, c: toC };
-            validMoves = nextMoves.filter(m => m.isJump); // Strict enforcement
+            validMoves = nextMoves.filter(m => m.isJump); 
             renderBoard();
-            return; // EXIT FUNCTION HERE (Turn does not change)
+            return; 
         }
     }
 
-    // End Turn (if no multi-jump occurred or chain finished)
     continuationPiece = null;
     selectedPiece = null;
     validMoves = [];
@@ -265,7 +210,6 @@ function isEnemy(amRed, pieceVal) {
 }
 
 function showWin(who) {
-    // Customize message based on mode
     let msg = `${who} Wins!`;
     if (gameMode === 'suicide') msg += " (All pieces gone)";
     winnerText.textContent = msg;
@@ -277,19 +221,15 @@ function resetGame() {
     winnerModal.style.display = 'none';
 }
 
-// --- FLIP BUTTON ACTION ---
-let isFlipped = false;
-
+// --- FLIP LOGIC ---
 document.getElementById('btn-flip').onclick = () => { 
-    isFlipped = !isFlipped; // State ပြောင်းမယ်
-    
+    isFlipped = !isFlipped;
     const board = document.getElementById('board');
     if (isFlipped) {
-        board.classList.add('flipped'); // Class ထည့်မယ် (အနီ အပေါ်ရောက်မယ်)
+        board.classList.add('flipped');
     } else {
-        board.classList.remove('flipped'); // Class ဖယ်မယ် (အနီ အောက်ပြန်ရောက်မယ်)
+        board.classList.remove('flipped');
     }
 };
 
-// Start
 initGame();

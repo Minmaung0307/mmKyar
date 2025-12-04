@@ -31,10 +31,11 @@ select {
 
 .controls {
     display: flex;
-    gap: 20px;
+    gap: 10px; /* Reduced gap to fit buttons */
     align-items: center;
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .turn-indicator {
@@ -46,7 +47,7 @@ select {
 }
 
 button {
-    padding: 10px 20px;
+    padding: 10px 15px;
     background: #e74c3c;
     color: white;
     border: none;
@@ -65,6 +66,7 @@ button {
     max-height: 500px;
     border: 5px solid #5d4037;
     background-color: #ecf0f1;
+    transition: transform 0.5s ease; /* Smooth Flip */
 }
 
 .square {
@@ -88,7 +90,6 @@ button {
     z-index: 10;
 }
 
-/* Highlight the piece that MUST continue jumping */
 .piece.must-jump {
     box-shadow: 0 0 15px 5px yellow;
     z-index: 20;
@@ -119,7 +120,6 @@ button {
     border: 2px solid #fff;
 }
 
-/* King Style */
 .piece.king::after {
     content: '👑';
     position: absolute;
@@ -137,7 +137,6 @@ button {
     color: #bdc3c7;
 }
 
-/* Modal */
 .modal {
     display: none;
     position: fixed;
@@ -156,12 +155,10 @@ button {
     border: 2px solid #f1c40f;
 }
 
-/* 1. ဘုတ်တစ်ခုလုံးကို ၁၈၀ ဒီဂရီ လှည့်မယ် */
+/* --- FLIP STYLES --- */
 .board.flipped { 
     transform: rotate(180deg); 
 }
-
-/* 2. ကစားရုပ်တွေကို ပြန်မတ်မယ် (မို့ရင် ဇောက်ထိုးဖြစ်နေမှာစိုးလို့) */
 .board.flipped .piece { 
     transform: rotate(180deg); 
 }
