@@ -134,20 +134,32 @@ function getValidMoves(r, c, type, mustJumpOnly = false) {
     const isRed = (type === 1 || type === 3);
     
     let dirs = [];
-    // Kings can move all diagonals
-    if (isKing) dirs = [[-1,-1], [-1,1], [1,-1], [1,1]];
-    else dirs = isRed ? [[-1,-1], [-1,1]] : [[1,-1], [1,1]];
-
-    const captureDirs = [[-1,-1], [-1,1], [1,-1], [1,1]];
+    // Directions definition
+    if (isKing) {
+        // King moves/captures in ALL 4 directions
+        dirs = [[-1,-1], [-1,1], [1,-1], [1,1]];
+    } else {
+        // Normal moves ONLY Forward
+        // Red moves UP (-1), Black moves DOWN (+1)
+        dirs = isRed ? [[-1,-1], [-1,1]] : [[1,-1], [1,1]];
+    }
 
     if (!isKing) {
-        // --- NORMAL PIECE ---
-        // 1. Capture (Forward & Backward allowed)
+        // --- NORMAL PIECE LOGIC (Fixed: Forward Capture Only) ---
+        
+        // စည်းမျဉ်းပြင်ဆင်ချက်: သာမန်အကောင်သည် ရှေ့ကိုပဲ စားရမည်။ 
+        // ထို့ကြောင့် captureDirs သည် dirs (သွားရာလမ်းကြောင်း) နှင့် အတူတူပင်ဖြစ်သည်
+        const captureDirs = dirs; 
+
+        // 1. Capture (Forward Only)
         captureDirs.forEach(([dr, dc]) => {
             const nr = r + dr, nc = c + dc; // Enemy pos
             const lr = r + dr*2, lc = c + dc*2; // Landing pos
+            
+            // Check board bounds for landing spot
             if (onBoard(lr, lc) && board[lr][lc] === 0) {
                 const mid = board[nr][nc];
+                // Check if there is an enemy in the middle
                 if (mid !== 0 && isEnemy(isRed, mid)) {
                     moves.push({ r: lr, c: lc, isJump: true, jumpR: nr, jumpC: nc });
                 }
@@ -165,7 +177,7 @@ function getValidMoves(r, c, type, mustJumpOnly = false) {
         }
 
     } else {
-        // --- FLYING KING ---
+        // --- FLYING KING LOGIC (All Directions) ---
         dirs.forEach(([dr, dc]) => {
             let captured = false;
             let enemyPos = null;
