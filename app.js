@@ -277,7 +277,8 @@ function resetGame() {
     winnerModal.style.display = 'none';
 }
 
-// --- BUTTON ACTIONS ---
+// --- FLIP BUTTON ACTION ---
+let isFlipped = false;
 
 document.getElementById('btn-flip').onclick = () => { 
     isFlipped = !isFlipped; // State ပြောင်းမယ်

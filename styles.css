@@ -165,13 +165,3 @@ button {
 .board.flipped .piece { 
     transform: rotate(180deg); 
 }
-
-/* 3. Drag Ghost (ဆွဲနေတဲ့အရိပ်) ကိုလည်း ပြန်မတ်မယ် */
-.dragging-ghost {
-    /* Ghost က body ထဲမှာ သီးသန့်ရှိတာမို့ flip လုပ်စရာမလိုပါ၊ ပုံမှန်အတိုင်းထားပါ */
-}
-
-/* 4. နံပါတ်တွေ (Coordinates) ကိုလည်း ပြန်မတ်မယ် */
-.board.flipped .coord-num { 
-    transform: rotate(180deg); 
-}
