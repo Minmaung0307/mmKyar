@@ -277,5 +277,18 @@ function resetGame() {
     winnerModal.style.display = 'none';
 }
 
+// --- BUTTON ACTIONS ---
+
+document.getElementById('btn-flip').onclick = () => { 
+    isFlipped = !isFlipped; // State ပြောင်းမယ်
+    
+    const board = document.getElementById('board');
+    if (isFlipped) {
+        board.classList.add('flipped'); // Class ထည့်မယ် (အနီ အပေါ်ရောက်မယ်)
+    } else {
+        board.classList.remove('flipped'); // Class ဖယ်မယ် (အနီ အောက်ပြန်ရောက်မယ်)
+    }
+};
+
 // Start
 initGame();

@@ -155,3 +155,23 @@ button {
     text-align: center;
     border: 2px solid #f1c40f;
 }
+
+/* 1. ဘုတ်တစ်ခုလုံးကို ၁၈၀ ဒီဂရီ လှည့်မယ် */
+.board.flipped { 
+    transform: rotate(180deg); 
+}
+
+/* 2. ကစားရုပ်တွေကို ပြန်မတ်မယ် (မို့ရင် ဇောက်ထိုးဖြစ်နေမှာစိုးလို့) */
+.board.flipped .piece { 
+    transform: rotate(180deg); 
+}
+
+/* 3. Drag Ghost (ဆွဲနေတဲ့အရိပ်) ကိုလည်း ပြန်မတ်မယ် */
+.dragging-ghost {
+    /* Ghost က body ထဲမှာ သီးသန့်ရှိတာမို့ flip လုပ်စရာမလိုပါ၊ ပုံမှန်အတိုင်းထားပါ */
+}
+
+/* 4. နံပါတ်တွေ (Coordinates) ကိုလည်း ပြန်မတ်မယ် */
+.board.flipped .coord-num { 
+    transform: rotate(180deg); 
+}
