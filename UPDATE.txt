@@ -1,0 +1,33 @@
+myKyar dependency repair — runtime ဖိုင်အပြည့်အစုံ
+
+ရုပ်ပုံပျက်ခြင်းနဲ့ Unexpected token '<' အကြောင်းရင်း:
+CSS/JS ဖိုင်မရှိတဲ့ path မှာ Firebase wildcard rewrite က index.html ပြန်ပေးနိုင်ပါတယ်။ JavaScript က HTML ကိုဖတ်လို့ '<' syntax error ဖြစ်ပါတယ်။ ဒီ static app အတွက် wildcard rewrite မလိုလို့ ဖယ်ထားပါတယ်။
+
+ထည့်သွင်းနည်း:
+1. မိမိ project ရဲ့ public/config.js (donation links) နဲ့ public/network-config.js (custom server settings ရှိရင်) ကို backup ကူးထားပါ။
+2. ဒီ ZIP ထဲက public/ ဖိုင်တွေကို မိမိ project/public/ ထဲမှာ ကူးထည့်ပါ။ public folder ကို မဖျက်ပါနဲ့။ public/public လို့ folder ထပ်မဖြစ်စေပါနဲ့။
+3. မိမိ config.js အရင်ဖိုင်ထဲမှာ link တွေဖြည့်ထားပြီးသားဆို အဲဒီ config.js ကို ပြန်ထားပါ။ ဒီ ZIP က config.js က empty donation defaults ပါ။ network-config.js မှာ custom settings ရှိရင် အရင်ဖိုင်ကို ပြန်ထားပါ။ အဲဒီဖိုင်တွေ မရှိသေးရင် ZIP ကပေးထားတဲ့ default ဖိုင်တွေ သုံးပါ။
+4. firebase.json ကို project root (public folder အပြင်ဘက်) မှာ အစားထိုးပါ။ မူရင်း .firebaserc ကို ဆက်ထားပါ။
+5. ဒီ project root မှာ Terminal ဖွင့်ပြီး:
+
+firebase deploy --only hosting --project kyar-mm
+
+6. Browser မှာ Cmd + Shift + R (Mac) / Ctrl + Shift + R (Windows) နှိပ်ပါ။ နှစ်ဦးစလုံး refresh လုပ်ပြီး Online Room အသစ်ဖွင့်ပါ။
+
+Public folder မှာ ဖိုင် 10 ခုလုံးရှိရပါမယ်:
+index.html
+styles.css
+app.js
+engine.js
+ai-worker.js
+config.js
+network-config.js
+footer.js
+privacy.html
+terms.html
+
+အထက်ပါ public/ သည် firebase.json ထဲက hosting.public = "public" folder ဖြစ်ရပါမယ်။ တခြား folder မှာထားမိရင် deploy ထဲ မပါပါဘူး။
+
+အရင် update အားလုံးပါပါတယ်: AI 4 levels, Online/Remote rooms, winner color choice/rematch, Flip Board, forward-only men, crowning ends turn, maximum mandatory capture, responsive UI, support footer, privacy/terms, auto-year.
+
+Local checks: file/script dependency completeness, JavaScript syntax, archive integrity. Live Firebase deployment/browser rendering ကို ဒီ environment မှာ မစမ်းရသေးပါ။
