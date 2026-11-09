@@ -20,7 +20,8 @@ function evaluate(s){let counts=[0,0,0],kings=[0,0,0];s.b.forEach(p=>{counts[sid
  v+=center*(p<3?2:3);let mobility=steps(s.b,i,false).length;v+=Math.min(mobility,10)*(p>2?2:4);if(!mobility)v-=12;scores[who]+=v;});
  if(total<9&&kings[s.turn]>kings[3-s.turn])scores[s.turn]+=20;
  let value=scores[s.turn]-scores[3-s.turn];return s.rule==='suicide'?-value:value;}
-const levels={easy:{depth:4,time:350},medium:{depth:8,time:1500},difficult:{depth:12,time:4500},advanced:{depth:18,time:12000}};
+// Short iterative-search budgets keep moves responsive on ordinary phones and laptops.
+const levels={easy:{depth:3,time:35},medium:{depth:5,time:90},difficult:{depth:8,time:180},advanced:{depth:12,time:350}};
 function choose(s,level,options={}){let legal=moves(s);if(!legal.length)return null;let cfg=levels[level]||levels.medium,deadline=Date.now()+(options.time??cfg.time),limit=options.depth??cfg.depth,nodes=0,completed=0,best=legal[0],tt=new Map(),ordering=new Map(),killers=[],history=new Map();const STOP={};
  const moveKey=m=>m.path.join('.');
  function key(st){return st.b.join('')+st.turn+'/'+st.quiet+'/'+Object.keys(st.seen).sort().map(k=>k+':'+st.seen[k]).join(',');}

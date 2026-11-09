@@ -1,33 +1,30 @@
-myKyar dependency repair — runtime ဖိုင်အပြည့်အစုံ
+myKyar update — AI အမြန်နှုန်းနှင့် Online Room ပြင်ဆင်ချက်
 
-ရုပ်ပုံပျက်ခြင်းနဲ့ Unexpected token '<' အကြောင်းရင်း:
-CSS/JS ဖိုင်မရှိတဲ့ path မှာ Firebase wildcard rewrite က index.html ပြန်ပေးနိုင်ပါတယ်။ JavaScript က HTML ကိုဖတ်လို့ '<' syntax error ဖြစ်ပါတယ်။ ဒီ static app အတွက် wildcard rewrite မလိုလို့ ဖယ်ထားပါတယ်။
+ပြင်ဆင်ထားသည်
+1. AI အဆင့် ၄ ဆင့်၏ စဉ်းစားချိန်ကို လျှော့ထားသည်။
+   - Easy: 35 ms / depth 3
+   - Medium: 90 ms / depth 5
+   - Difficult: 180 ms / depth 8
+   - Advanced: 350 ms / depth 12
+   စက်နှင့် browser အခြေအနေအလိုက် အမှန်တကယ်ကြာချိန် ကွာနိုင်သည်။ Advanced သည် အမြန်ဆုံးမဟုတ်ဘဲ အဆင့်များထဲတွင် ပိုမိုစဉ်းစားသည်။
+2. AI hint စာသားကို အဆင့်လိုက် အမြန်နှုန်းနှင့် ကိုက်ညီအောင် ပြင်ထားသည်။
+3. Online Room တွင် ချိတ်ဆက်ထားသောသူငယ်ချင်း ပြတ်သွားပါက Host သည် နောက်တစ်ကြိမ် connection ကို လက်ခံနိုင်အောင် ပြင်ထားသည်။
+4. Version မကိုက်သော သို့မဟုတ် မမှန်ကန်သော network message တစ်ခုကြောင့် Host ၏ netReady ပိတ်သွားပြီး ဆက်မကစားနိုင်တော့သည့် အမှားကို ပြင်ထားသည်။ မသိသော message ကို လျစ်လျူရှုမည်။
+5. Network protocol စမ်းသပ်မှုတွင် လိုအပ်နေသော mock DOM methods များ ထည့်ထားသည်။
 
-ထည့်သွင်းနည်း:
-1. မိမိ project ရဲ့ public/config.js (donation links) နဲ့ public/network-config.js (custom server settings ရှိရင်) ကို backup ကူးထားပါ။
-2. ဒီ ZIP ထဲက public/ ဖိုင်တွေကို မိမိ project/public/ ထဲမှာ ကူးထည့်ပါ။ public folder ကို မဖျက်ပါနဲ့။ public/public လို့ folder ထပ်မဖြစ်စေပါနဲ့။
-3. မိမိ config.js အရင်ဖိုင်ထဲမှာ link တွေဖြည့်ထားပြီးသားဆို အဲဒီ config.js ကို ပြန်ထားပါ။ ဒီ ZIP က config.js က empty donation defaults ပါ။ network-config.js မှာ custom settings ရှိရင် အရင်ဖိုင်ကို ပြန်ထားပါ။ အဲဒီဖိုင်တွေ မရှိသေးရင် ZIP ကပေးထားတဲ့ default ဖိုင်တွေ သုံးပါ။
-4. firebase.json ကို project root (public folder အပြင်ဘက်) မှာ အစားထိုးပါ။ မူရင်း .firebaserc ကို ဆက်ထားပါ။
-5. ဒီ project root မှာ Terminal ဖွင့်ပြီး:
+စမ်းသပ်မှု
+- JavaScript syntax စစ်ဆေးမှု: အောင်မြင်
+- Engine tests: အောင်မြင်
+- Network protocol mock tests: အောင်မြင် (Room join, နှစ်ဖက်အလှည့်, state sync, invalid move rejection, rematch, အရောင်ပြောင်းခြင်း)
+- AI tactics test: မူလ archive ထဲက စမ်းသပ်မှုမှာ Easy အပါအဝင် အဆင့်တိုင်းက tactical trap တစ်ခုကို ရှောင်ရမည်ဟု မျှော်လင့်ထားပြီး မူလဖိုင်အတိုင်း စမ်းသပ်ရာတွင်လည်း မအောင်မြင်ခဲ့သည်။ AI အဆင့်/အမြန်နှုန်းပြင်ဆင်မှုနှင့် သီးခြား engine tactics ပြဿနာဖြစ်သည်။
+- Playwright UI test: Playwright dependency မပါဝင်သဖြင့် မစမ်းနိုင်ခဲ့ပါ။
+- အမှန်တကယ် အင်တာနက်ပေါ်တွင် မတူညီသော network/browser နှစ်ခုဖြင့် Live WebRTC စမ်းသပ်ခြင်းနှင့် Firebase deploy ကို ဤနေရာမှ မလုပ်နိုင်ပါ။ Mock network test အောင်မြင်ခြင်းသည် public internet ပေါ်တွင် connection အမြဲအောင်မြင်မည်ဟု အာမမခံပါ။
 
-firebase deploy --only hosting --project kyar-mm
+တင်သွင်းနည်း
+1. မူလ project ကို backup လုပ်ပါ။
+2. ZIP ထဲက myKyar/public/ ဖိုင်များကို မိမိ project ၏ public/ ထဲသို့ ကူးထည့်ပါ။ public folder ကို အစားထိုးဖျက်မပစ်ပါနှင့်။
+3. firebase.json ကို project root တွင် အစားထိုးပါ။ မိမိ .firebaserc နှင့် ကိုယ်ပိုင် config.js / network-config.js setting များရှိပါက backup မှ ပြန်ထည့်ပါ။
+4. Project root Terminal မှ firebase deploy --only hosting --project kyar-mm ကို run ပါ။
+5. နှစ်ဦးစလုံး browser ကို hard refresh (Mac: Cmd+Shift+R) လုပ်ပြီး Room အသစ်ဖွင့်ကာ code ကို Join လုပ်သူထံ ပို့ပါ။
 
-6. Browser မှာ Cmd + Shift + R (Mac) / Ctrl + Shift + R (Windows) နှိပ်ပါ။ နှစ်ဦးစလုံး refresh လုပ်ပြီး Online Room အသစ်ဖွင့်ပါ။
-
-Public folder မှာ ဖိုင် 10 ခုလုံးရှိရပါမယ်:
-index.html
-styles.css
-app.js
-engine.js
-ai-worker.js
-config.js
-network-config.js
-footer.js
-privacy.html
-terms.html
-
-အထက်ပါ public/ သည် firebase.json ထဲက hosting.public = "public" folder ဖြစ်ရပါမယ်။ တခြား folder မှာထားမိရင် deploy ထဲ မပါပါဘူး။
-
-အရင် update အားလုံးပါပါတယ်: AI 4 levels, Online/Remote rooms, winner color choice/rematch, Flip Board, forward-only men, crowning ends turn, maximum mandatory capture, responsive UI, support footer, privacy/terms, auto-year.
-
-Local checks: file/script dependency completeness, JavaScript syntax, archive integrity. Live Firebase deployment/browser rendering ကို ဒီ environment မှာ မစမ်းရသေးပါ။
+မှတ်ချက်: PeerJS/WebRTC ချိတ်ဆက်မှုသည် browser permissions, firewall, NAT နှင့် TURN server လိုအပ်မှုတို့အပေါ် မူတည်နိုင်သည်။ မတူညီသော network နှစ်ခုဖြင့် စမ်းသပ်ပြီးမှ production-ready ဟု အတည်ပြုသင့်သည်။
