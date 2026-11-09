@@ -1,6 +1,6 @@
 'use strict';
 (function(){
- const $=id=>document.getElementById(id),lessons=window.KYAR_LESSONS,puzzles=window.KYAR_PUZZLES,proof=window.KYAR_ENDGAME,coord=i=>String.fromCharCode(104-i%8)+(8-(i>>3)),names={1:'အနီ',2:'အမည်း'};
+ const $=id=>document.getElementById(id),lessons=window.KYAR_LESSONS,puzzles=window.KYAR_PUZZLES,proof=window.KYAR_ENDGAME,coord=i=>String.fromCharCode(104-i%8)+(8-(i>>3)),names={1:'အနီ',2:'အပြာ'};
  let section="rules",current=0,s,progress=0,nodeId=proof.start,prefix=[],trail=[],log=[],flip=false,note='',hint=false;
  const proofKey=st=>st.b.join('')+'/'+st.turn,lookup=new Map();
  function nodeState(n){let st=Kyar.initial();st.b=Array(64).fill(0);n.red.forEach(i=>st.b[i]=3);st.b[n.black]=4;st.turn=n.turn;st.seen={};return st;}
